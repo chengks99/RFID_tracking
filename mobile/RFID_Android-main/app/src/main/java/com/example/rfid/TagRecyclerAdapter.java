@@ -2,6 +2,7 @@ package com.example.rfid;
 
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +16,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 public class TagRecyclerAdapter extends RecyclerView.Adapter<TagRecyclerAdapter.TagViewHolder> implements Filterable {
@@ -26,6 +32,7 @@ public class TagRecyclerAdapter extends RecyclerView.Adapter<TagRecyclerAdapter.
 //    private List<String> tags;
     private List<Tag> tags;
     private List<Tag> tagListFull;
+    public static double n=0.21299;
 
     public void updateTagListFull(List<Tag> newTags) {
         tagListFull.clear();
@@ -73,53 +80,39 @@ public static List<String> findUniqueTags(List<Tag> tags) {
     public static double calculateAvgRSSI(List<Tag> tags, String tagID){
         double sum=0;
         int count=0;
-        System.out.println("tag size: "+String.valueOf(tags.size()));
+//        System.out.println("tag size: "+String.valueOf(tags.size()));
         for (Tag tag: tags){
             if (tag.getTagID().equals(tagID)){
                 sum += Integer.valueOf(tag.getRSSI());
                 count +=1;
             }
         }
-        System.out.println("count: "+String.valueOf(count));
-        return sum/count;
+//        System.out.println("count: "+String.valueOf(count));
+        if (count !=0){
+        return sum/count;}
+        else{
+            return 0;
+        }
     }
-    public static double distanceAlgorithm1(List<Tag> tags, String tagID){
-        double sum=0;
-//        for (Tag tag: tags){
-//            if (tag.getTagID().equals(tagID)){
-//                sum += Integer.valueOf(tag.getRSSI());
-//            }
-//        }
-        double avgRSSI = calculateAvgRSSI(tags,tagID);
-        double rssiRatio = (double) (-80-avgRSSI)/(10*4);
-        double result = Math.pow(10,rssiRatio);
-//        double result = squareRoot * 0.26;
+    public static double distanceAlgorithm3(List<Tag> tags,Double avgRSSI, String tagID){
+//        double avgRSSI = calculateAvgRSSI(tags,tagID);
+        double rssiRatio = (double) avgRSSI/-51;
+        Log.d("distance Algorithm rssi At 1m (defualt):", "-51");
+        Log.d("distance Algorithm received params (default): ", "0.21299");
+        double squareRoot = Math.pow(rssiRatio,1/n);
+        double result = squareRoot * 1;
+//        distances.putValue(tagID, result);
         return result;
     }
 
-    public static double distanceAlgorithm2(List<Tag> tags, String tagID){
-        double avgRSSI = calculateAvgRSSI(tags,tagID);
-        double A = -82;
-        double n = 6.13;
-        if (avgRSSI>-40){
-            n = 4.23;
-        }
-        System.out.println("avgRSSI: " + String.valueOf(avgRSSI));
-        System.out.println("n: "+ String.valueOf(n));
-        double exp = (double) (avgRSSI-A)/(-10*n);
-        double result = Math.pow(10,exp);
-        return result;
-    }
-    public static double distanceAlgorithm3(List<Tag> tags, String tagID){
-        double sum=0;
-        for (Tag tag: tags){
-            if (tag.getTagID().equals(tagID)){
-                sum += Integer.valueOf(tag.getRSSI());
-            }
-        }
-        double rssiRatio = (double) sum/-64;
-        double squareRoot = Math.pow(rssiRatio,1/0.403);
-        double result = squareRoot * 0.26;
+    public static double distanceAlgorithm3(List<Tag> tags, Double avgRSSI, String tagID,Double receivedParams,Double rssiAt1m){
+//        double avgRSSI = calculateAvgRSSI(tags,tagID);
+        double rssiRatio = (double) avgRSSI/rssiAt1m;
+        Log.d("distance Algorithm rssi At 1m:", String.valueOf(rssiAt1m));
+        Log.d("distance Algorithm received params: ", String.valueOf(receivedParams));
+        double squareRoot = Math.pow(rssiRatio,1/receivedParams);
+        double result = squareRoot * 1;
+//        distances.putValue(tagID, result);
         return result;
     }
     public int CountUniqueTags(List<Tag> tags){

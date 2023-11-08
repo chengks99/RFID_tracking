@@ -28,6 +28,11 @@ public class Tag {
     }
     public String getDistance() {return distance;}
 
+    public Double compareTo(Tag T){
+        Double difference = Double.parseDouble(this.distance) - Double.parseDouble(T.distance);
+        return difference;
+    }
+
 //    public String getOrderID(){
 //        return orderID;
 //    }

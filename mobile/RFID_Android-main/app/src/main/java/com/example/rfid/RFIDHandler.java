@@ -31,7 +31,9 @@ import com.zebra.rfid.api3.START_TRIGGER_TYPE;
 import com.zebra.rfid.api3.STATUS_EVENT_TYPE;
 import com.zebra.rfid.api3.STOP_TRIGGER_TYPE;
 import com.zebra.rfid.api3.TagData;
+import com.zebra.rfid.api3.TagDataArray;
 import com.zebra.rfid.api3.TriggerInfo;
+import android.media.AudioAttributes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,7 +51,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
     // UI and context
     TextView textView;
     private MainActivity context;
-    private LocateTagActivity locateTagcontext;
+//    private LocateTagActivity locateTagcontext;
     // general
     private int MAX_POWER = 300;
     private int MAX_SENSITIVTY;
@@ -61,88 +63,17 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
         // application context
         context = activity;
         // Status UI
-        textView = activity.rfidStatus;
+        textView = activity.ReaderConnectionText;
         // SDK
         InitSDK();
     }
 
-    void onCreate(LocateTagActivity activity){
-        locateTagcontext = activity;
-        textView= activity.ReaderConnectionText;
-        InitSDK();
-    }
+//    void onCreate(LocateTagActivity activity){
+//        locateTagcontext = activity;
+//        textView= activity.ReaderConnectionText;
+//        InitSDK();
+//    }
 
-    // TEST BUTTON functionality
-    // following two tests are to try out different configurations features
-
-    public String Test1() {
-        // check reader connection
-        if (!isReaderConnected())
-            return "Not connected";
-        // set antenna configurations - reducing power to 200
-        try {
-            Antennas.AntennaRfConfig config = null;
-            config = reader.Config.Antennas.getAntennaRfConfig(1);
-            config.setTransmitPowerIndex(100);
-            config.setrfModeTableIndex(0);
-            config.setTari(0);
-            reader.Config.Antennas.setAntennaRfConfig(1, config);
-        } catch (InvalidUsageException e) {
-            e.printStackTrace();
-        } catch (OperationFailureException e) {
-            e.printStackTrace();
-            return e.getResults().toString() + " " + e.getVendorMessage();
-        }
-        return "Antenna power Set to 220";
-    }
-
-    public String Test2() {
-        // check reader connection
-        if (!isReaderConnected())
-            return "Not connected";
-        // Set the singulation control to S2 which will read each tag once only
-        try {
-            Antennas.SingulationControl s1_singulationControl = reader.Config.Antennas.getSingulationControl(1);
-            s1_singulationControl.setSession(SESSION.SESSION_S2);
-            s1_singulationControl.Action.setInventoryState(INVENTORY_STATE.INVENTORY_STATE_A);
-            s1_singulationControl.Action.setSLFlag(SL_FLAG.SL_ALL);
-            reader.Config.Antennas.setSingulationControl(1, s1_singulationControl);
-        } catch (InvalidUsageException e) {
-            e.printStackTrace();
-        } catch (OperationFailureException e) {
-            e.printStackTrace();
-            return e.getResults().toString() + " " + e.getVendorMessage();
-        }
-        return "Session set to S2";
-    }
-
-    public String Defaults() {
-        // check reader connection
-        if (!isReaderConnected())
-            return "Not connected";;
-        try {
-            Antennas.AntennaRfConfig config = null;
-            config = reader.Config.Antennas.getAntennaRfConfig(1);
-            config.setTransmitPowerIndex(MAX_POWER);
-            config.setrfModeTableIndex(0);
-            config.setTari(25000);
-            Log.e("sensitivity:",Integer.toString(config.getReceiveSensitivityIndex()));
-            config.setReceiveSensitivityIndex(2);
-            reader.Config.Antennas.setAntennaRfConfig(1, config);
-            // singulation to S0
-            Antennas.SingulationControl s1_singulationControl = reader.Config.Antennas.getSingulationControl(1);
-            s1_singulationControl.setSession(SESSION.SESSION_S0);
-            s1_singulationControl.Action.setInventoryState(INVENTORY_STATE.INVENTORY_STATE_A);
-            s1_singulationControl.Action.setSLFlag(SL_FLAG.SL_ALL);
-            reader.Config.Antennas.setSingulationControl(1, s1_singulationControl);
-        } catch (InvalidUsageException e) {
-            e.printStackTrace();
-        } catch (OperationFailureException e) {
-            e.printStackTrace();
-            return e.getResults().toString() + " " + e.getVendorMessage();
-        }
-        return "Default settings applied";
-    }
 
     private boolean isReaderConnected() {
         if (reader != null && reader.isConnected())
@@ -192,8 +123,8 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
             if (context!=null){
                 readers = new Readers(context, ENUM_TRANSPORT.ALL);
             }
-            if (locateTagcontext!=null){
-                locateTagReaders = new Readers(locateTagcontext, ENUM_TRANSPORT.ALL);}
+//            if (locateTagcontext!=null){
+//                locateTagReaders = new Readers(locateTagcontext, ENUM_TRANSPORT.ALL);}
             try {
                 availableRFIDReaderList = readers.GetAvailableRFIDReaderList();
 
@@ -307,25 +238,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
         }
         return "";
     }
-    public void beepReader() throws OperationFailureException, InvalidUsageException {
-        if (reader.isConnected()) {
-            try {
-                if (eventHandler == null) {
-                    // Initialize the event handler if it's null
-                    eventHandler = new EventHandler();
-                }
-                reader.Config.setBeeperVolume(BEEPER_VOLUME.HIGH_BEEP);
-            } catch (InvalidUsageException e) {
-                Log.e(TAG, "InvalidUsageException: " + e.getMessage());
-            } catch (OperationFailureException e) {
-                Log.e(TAG, "OperationFailureException: " + e.getMessage());
-                Log.e(TAG,"Operation error message: "+ e.getVendorMessage());
-                Log.e(TAG,"Operation error results: "+ e.getResults());
-            }
-        } else {
-            Log.e(TAG, "Reader is not connected.");
-        }
-    }
+
 
     private void ConfigureReader() {
         Log.d(TAG, "ConfigureReader " + reader.getHostName());
@@ -350,6 +263,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
                 reader.Config.setStopTrigger(triggerInfo.StopTrigger);
                 //set beeper volume
                 reader.Config.setBeeperVolume(BEEPER_VOLUME.QUIET_BEEP);
+
                 // power levels are index based so maximum power supported get the last one
                 MAX_POWER = reader.ReaderCapabilities.getTransmitPowerLevelValues().length - 1;
                 MAX_SENSITIVTY =-65;
@@ -393,13 +307,13 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
                     }
 
                 });
-                locateTagcontext.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        textView.setText("Disconnected");
-                    }
-
-                });
+//                locateTagcontext.runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        textView.setText("Disconnected");
+//                    }
+//
+//                });
             }
         } catch (InvalidUsageException e) {
             e.printStackTrace();
@@ -454,7 +368,9 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
         // Read Event Notification
         public void eventReadNotify(RfidReadEvents e) {
             // Recommended to use new method getReadTagsEx for better performance in case of large tag population
-            TagData[] myTags = reader.Actions.getReadTags(100);
+            TagDataArray listTags = reader.Actions.getReadTagsEx(200);
+            TagData[] myTags = listTags.getTags();
+//            TagData[] myTags= reader.Actions.getReadTags(200);
             if (myTags != null) {
                 for (int index = 0; index < myTags.length; index++) {
                     Log.d(TAG, "Tag ID " + myTags[index].getTagID());
@@ -488,9 +404,9 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
                         protected Void doInBackground(Void... voids) {
                             if (context!=null){
                                 context.handleTriggerPress(true);}
-                            if (locateTagcontext != null) {
-                                locateTagcontext.handleTriggerPress(true);
-                            }
+//                            if (locateTagcontext != null) {
+//                                locateTagcontext.handleTriggerPress(true);
+//                            }
                             return null;
                         }
                     }.execute();
@@ -501,9 +417,9 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
                         protected Void doInBackground(Void... voids) {
                             if (context != null){
                              context.handleTriggerPress(false);}
-                            if (locateTagcontext != null) {
-                                locateTagcontext.handleTriggerPress(false);
-                            }
+//                            if (locateTagcontext != null) {
+//                                locateTagcontext.handleTriggerPress(false);
+//                            }
                             return null;
                         }
                     }.execute();
@@ -518,9 +434,9 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
         protected Void doInBackground(TagData[]... params) {
             if (context!=null){
                 context.handleTagdata(params[0]);}
-            if (locateTagcontext!=null){
-                locateTagcontext.handleTagdata(params[0]);
-            }
+//            if (locateTagcontext!=null){
+//                locateTagcontext.handleTagdata(params[0]);
+//            }
             return null;
         }
     }

@@ -7,9 +7,9 @@
         app:showAsAction="ifRoom">
     </item>
 
-    <item android:id="@+id/findLocation"
-        android:icon="@drawable/ic_location"
-        android:title="Location"
+    <item android:id="@+id/settings"
+        android:icon="@drawable/ic_settings"
+        android:title="Settings"
         app:showAsAction="ifRoom"></item>
 
     <item android:id="@+id/home"
