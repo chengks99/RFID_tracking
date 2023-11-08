@@ -251,14 +251,18 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
 
     public void OnSave50cmButtonPressed(View view){
         if (rssiValue.getText() != ""){
-            receivedRSSI50cm = Double.parseDouble(String.valueOf(rssiValue.getText()));
+            String rssiNumbersOnly = String.valueOf(rssiValue.getText());
+            String numericPart = rssiNumbersOnly.replaceAll("[^0-9.-]", "");
+            receivedRSSI50cm = Double.parseDouble(numericPart);
             Toast.makeText(this, "Saved 50cm RSSI: "+ receivedRSSI50cm.toString(), Toast.LENGTH_SHORT).show();}
         calculateN();
     }
 
     public void OnSave1mButtonPressed(View view){
         if (rssiValue.getText()!=""){
-            receivedRSSI1meter = Double.parseDouble(String.valueOf(rssiValue.getText()));
+            String rssiNumbersOnly = String.valueOf(rssiValue.getText());
+            String numericPart = rssiNumbersOnly.replaceAll("[^0-9.-]", "");
+            receivedRSSI1meter = Double.parseDouble(numericPart);
             Toast.makeText(this, "Saved 1m RSSI: "+ receivedRSSI1meter.toString(),Toast.LENGTH_SHORT).show();
         }
         calculateN();
