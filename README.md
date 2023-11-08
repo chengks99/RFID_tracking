@@ -4,6 +4,8 @@
 * Microsoft Visual Studio 2013 (or higher version)
 * Microsoft .NET Framework 4.8 (4.0 or higher) (https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
 * SATOPrinterAPI.dll (https://satoasiapacific.com/newzealand/product/sato-printer-api/)
+* Platform supported: 32bit or 64bit application
+* Platform target: x86 or x64
 
 ### Set Up
 Copy SATOPrinterAPI assembly (SATOPrinterAPI.dll) into the project folder. Add reference assembly into project references.
