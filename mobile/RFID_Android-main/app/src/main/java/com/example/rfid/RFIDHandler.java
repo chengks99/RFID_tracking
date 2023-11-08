@@ -368,7 +368,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
         // Read Event Notification
         public void eventReadNotify(RfidReadEvents e) {
             // Recommended to use new method getReadTagsEx for better performance in case of large tag population
-            TagDataArray listTags = reader.Actions.getReadTagsEx(200);
+            TagDataArray listTags = reader.Actions.getReadTagsEx(300);
             TagData[] myTags = listTags.getTags();
 //            TagData[] myTags= reader.Actions.getReadTags(200);
             if (myTags != null) {
