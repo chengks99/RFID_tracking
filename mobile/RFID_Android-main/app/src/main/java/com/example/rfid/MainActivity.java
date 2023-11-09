@@ -356,18 +356,18 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
             isPlaying = false;
         }
     }
-    private SoundPool createSoundPool(){
-        AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build();
-
-        SoundPool.Builder builder = new SoundPool.Builder();
-        builder.setAudioAttributes(audioAttributes);
-        builder.setMaxStreams(1); // Adjust the number of streams as needed.
-        soundPool = builder.build();
-        return soundPool;
-    }
+//    private SoundPool createSoundPool(){
+//        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+//                .setUsage(AudioAttributes.USAGE_MEDIA)
+//                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+//                .build();
+//
+//        SoundPool.Builder builder = new SoundPool.Builder();
+//        builder.setAudioAttributes(audioAttributes);
+//        builder.setMaxStreams(1); // Adjust the number of streams as needed.
+//        soundPool = builder.build();
+//        return soundPool;
+//    }
 
     private double calculateAvgRSSIWindow(List<Double> rssiWindow){
         double sum=0;
