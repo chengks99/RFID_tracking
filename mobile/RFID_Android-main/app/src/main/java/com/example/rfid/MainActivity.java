@@ -364,15 +364,31 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
     }
 
     private void checkRFIDStatus() {
-        boolean isReaderConnected = rfidHandler.isReaderConnected();
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (!isReaderConnected) {
-                    ReaderConnectionText.setText("RFID Reader not connected");
+        boolean isReaderConnected = false;
+
+        try {
+            // Attempt to get the RFID connection status
+            isReaderConnected = rfidHandler.isReaderConnected();
+
+            boolean finalIsReaderConnected = isReaderConnected;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (!finalIsReaderConnected) {
+                        ReaderConnectionText.setText("RFID Reader not connected");
+                        // Add any other UI updates or actions you want when the reader is not connected
+                    }
                 }
-            }
-        });
+            });
+        } catch (Exception e) {
+            Log.e("RFIDStatusCheck", "Error checking RFID status", e);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ReaderConnectionText.setText("Error! Please check the battery");
+                }
+            });
+        }
     }
 
 
