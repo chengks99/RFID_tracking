@@ -19,6 +19,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
     final int[] notFoundCount = {0};
     private List<Double> rssiWindow = new ArrayList<Double>();
     public ArrayList<WorkOrder> items= new ArrayList<WorkOrder>();
+    private static final int RFID_STATUS_CHECK_INTERVAL = 5000;
     private InputMethodManager inputManager;
 
 
@@ -136,8 +138,22 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
         }else{
             rfidHandler.onCreate(this);
         }
-
+        startRFIDStatusCheckTimer();
     }
+
+    private void startRFIDStatusCheckTimer() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("Checking rfid status", String.valueOf(rfidHandler.isReaderConnected()));
+                checkRFIDStatus();
+                // Repeat the check after the specified interval
+                startRFIDStatusCheckTimer();
+            }
+        }, RFID_STATUS_CHECK_INTERVAL);
+    }
+
     public void onFindWorkOrder(View view){
         try{
             inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
@@ -292,37 +308,6 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
         return n;
     }
 
-    public void playBeepSound(SoundPool soundPool, float rate, int duration) {
-        if (!isPlaying && isTriggerPressed) {
-            soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-                @Override
-                public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                    if (status == 0) {
-                        // The sound resource has finished loading and is ready to be played.
-                        int streamId = soundPool.play(sampleId, 1.0f, 1.0f, 1, 0, rate);
-
-                        // Calculate the sound duration (adjust this value as needed)
-                        int durationMs = duration;
-                        isPlaying = true;
-
-                        // Schedule the release of the SoundPool after the sound duration
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                soundPool.stop(streamId); // Stop the sound after the specified duration
-                                isPlaying = false;
-                                soundPool.release(); // Release the SoundPool after the sound has played
-                            }
-                        }, durationMs);
-                    } else {
-                        // Handle any errors that occurred during loading.
-                    }
-                }
-            });
-
-            int soundId = soundPool.load(this, R.raw.beep, 1);
-        }
-    }
 
     private void playMPSound(boolean isFast){
         if (!isPlaying && isTriggerPressed) {
@@ -356,18 +341,6 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
             isPlaying = false;
         }
     }
-//    private SoundPool createSoundPool(){
-//        AudioAttributes audioAttributes = new AudioAttributes.Builder()
-//                .setUsage(AudioAttributes.USAGE_MEDIA)
-//                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-//                .build();
-//
-//        SoundPool.Builder builder = new SoundPool.Builder();
-//        builder.setAudioAttributes(audioAttributes);
-//        builder.setMaxStreams(1); // Adjust the number of streams as needed.
-//        soundPool = builder.build();
-//        return soundPool;
-//    }
 
     private double calculateAvgRSSIWindow(List<Double> rssiWindow){
         double sum=0;
@@ -390,6 +363,19 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
         }
     }
 
+    private void checkRFIDStatus() {
+        boolean isReaderConnected = rfidHandler.isReaderConnected();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!isReaderConnected) {
+                    ReaderConnectionText.setText("RFID Reader not connected");
+                }
+            }
+        });
+    }
+
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -398,6 +384,7 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
 //        final StringBuilder sb = new StringBuilder();
 //        List<Tag> sb = new ArrayList<>();
         synchronized (sb){
+//            checkRFIDStatus();
             String search_tagID = "";
             DecimalFormat decimalFormat = new DecimalFormat("#.##");
             for (int index = 0; index < tagData.length; index++) {
@@ -476,7 +463,7 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
                             Log.d("notFoundCount:",String.valueOf(notFoundCount[0]));
 
                             if (notFoundCount[0]>=50){
-                                Log.e("Not found","Tag not found 10 times");
+                                Log.e("Not found","Tag not found 50 times");
                             rssiToDistance.setText("");
                             rssiValue.setText("");
                             circleView.setImageResource(R.drawable.delete);

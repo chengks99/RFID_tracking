@@ -75,7 +75,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
 //    }
 
 
-    private boolean isReaderConnected() {
+    public boolean isReaderConnected() {
         if (reader != null && reader.isConnected())
             return true;
         else {
