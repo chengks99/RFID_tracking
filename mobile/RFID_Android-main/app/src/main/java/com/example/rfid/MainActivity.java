@@ -376,7 +376,6 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
                 public void run() {
                     if (!finalIsReaderConnected) {
                         ReaderConnectionText.setText("RFID Reader not connected");
-                        // Add any other UI updates or actions you want when the reader is not connected
                     }
                 }
             });
