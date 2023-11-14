@@ -8,7 +8,10 @@
 * Platform target: x86 or x64
 
 ### Set Up
-Copy SATOPrinterAPI assembly (SATOPrinterAPI.dll) into the project folder. Add reference assembly into project references.
+Copy SATOPrinterAPI assembly (SATOPrinterAPI.dll) into the project folder. Add reference assembly into project references.\
+
+### How To Use
+* Double click on .exe file
 
 ## Mobile App
 ### Installation
@@ -17,3 +20,6 @@ Copy SATOPrinterAPI assembly (SATOPrinterAPI.dll) into the project folder. Add r
 
 Supported Operating Systems:
 * Android 10 till Android 13 for RFD40
+
+### How To Use
+* Install APK on an android device
