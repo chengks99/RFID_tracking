@@ -216,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
         super.onPostResume();
         String status = rfidHandler.onResume();
         ReaderConnectionText.setText(status);
+        startRFIDStatusCheckTimer();
     }
 
     @Override
@@ -312,9 +313,9 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
     private void playMPSound(boolean isFast){
         if (!isPlaying && isTriggerPressed) {
             if (isFast){
-                mp = MediaPlayer.create(this, R.raw.fast_beep);}
+                mp = MediaPlayer.create(this, R.raw.short_beep2);}
             else{
-                mp = MediaPlayer.create(this, R.raw.medium_beep2);
+                mp = MediaPlayer.create(this, R.raw.single_simple_medium_beep);
             }
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override

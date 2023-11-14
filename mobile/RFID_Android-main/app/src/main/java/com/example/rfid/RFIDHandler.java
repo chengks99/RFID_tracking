@@ -118,28 +118,46 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
         @Override
         protected Void doInBackground(Void... voids) {
             Log.d(TAG, "CreateInstanceTask");
-            // Based on support available on host device choose the reader type
-            InvalidUsageException invalidUsageException = null;
-            if (context!=null){
-                readers = new Readers(context, ENUM_TRANSPORT.ALL);
-            }
-//            if (locateTagcontext!=null){
-//                locateTagReaders = new Readers(locateTagcontext, ENUM_TRANSPORT.ALL);}
             try {
-                availableRFIDReaderList = readers.GetAvailableRFIDReaderList();
-
-            } catch (InvalidUsageException e) {
-                e.printStackTrace();
-            }
-            if (invalidUsageException != null) {
-                readers.Dispose();
-                readers = null;
-                if (readers == null) {
-                    readers = new Readers(context, ENUM_TRANSPORT.BLUETOOTH);
+                // Based on support available on the host device, choose the reader type
+                if (context != null) {
+                    readers = new Readers(context, ENUM_TRANSPORT.ALL);
                 }
+                try {
+                    availableRFIDReaderList = readers.GetAvailableRFIDReaderList();
+                } catch (InvalidUsageException e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                // Log the exception for debugging purposes
+                e.printStackTrace();
             }
             return null;
         }
+//        protected Void doInBackground(Void... voids) {
+//            Log.d(TAG, "CreateInstanceTask");
+//            // Based on support available on host device choose the reader type
+//            InvalidUsageException invalidUsageException = null;
+//            if (context!=null){
+//                readers = new Readers(context, ENUM_TRANSPORT.ALL);
+//            }
+////            if (locateTagcontext!=null){
+////                locateTagReaders = new Readers(locateTagcontext, ENUM_TRANSPORT.ALL);}
+//            try {
+//                availableRFIDReaderList = readers.GetAvailableRFIDReaderList();
+//
+//            } catch (InvalidUsageException e) {
+//                e.printStackTrace();
+//            }
+//            if (invalidUsageException != null) {
+//                readers.Dispose();
+//                readers = null;
+//                if (readers == null) {
+//                    readers = new Readers(context, ENUM_TRANSPORT.BLUETOOTH);
+//                }
+//            }
+//            return null;
+//        }
 
         @Override
         protected void onPostExecute(Void aVoid) {
