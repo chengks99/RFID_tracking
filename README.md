@@ -11,7 +11,7 @@
 Copy SATOPrinterAPI assembly (SATOPrinterAPI.dll) into the project folder. Add reference assembly into project references.\
 
 ### How To Use
-* Double click on .exe file
+* Double click on SATO_NET_GUI.exe file
 
 ## Mobile App
 ### Installation
