@@ -9,14 +9,20 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.UUID;
 
 public class WorkOrder implements Parcelable, Serializable{
     private String workOrderID;
     private String Date;
+    private String uniqueId;
 
     public WorkOrder(String workOrderID, String Date){
         this.workOrderID=workOrderID;
         this.Date = Date;
+        this.uniqueId = workOrderID + Date;
+    }
+    public String getUniqueId() {
+        return uniqueId;
     }
 
     public String getWorkOrderID(){

@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
     private Button submitButton;
     private Button fiftySaveButton;
     private Button meterSaveButton;
+    private Button scanButton;
     private TextView tagStatusMsg;
     private Bundle senderBundle = new Bundle();
     private Bundle workOrderBundle = new Bundle();
@@ -83,7 +84,8 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
     private SoundPool soundPool;
     private boolean isPlaying = false;
     private boolean isEntered = false;
-    private int sbMaxLength=200;
+    public boolean buttonPressed = false;
+    private int sbMaxLength=100;
     private boolean isTriggerPressed = false;
     final int[] notFoundCount = {0};
     private List<Double> rssiWindow = new ArrayList<Double>();
@@ -104,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
 //        progressBarCustom.setProgress(0);
 
         ReaderConnectionText = findViewById(R.id.ReaderConnectionText);
+//        scanButton= findViewById(R.id.scanButton);
         rssiToDistance = findViewById(R.id.rssiToDistance);
         tagStatusMsg = findViewById(R.id.tagStatusMsg);
         tagID = findViewById(R.id.tagID);
@@ -184,6 +187,8 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
                 WorkOrder workOrder = new WorkOrder(workID, currentDate);
                 items.add(workOrder);
                 System.out.println(dtf.format(now));
+                Log.d("items length:",String.valueOf(items.size()));
+                Log.d("Added Work ID of work order:", items.get(items.size()-1).getWorkOrderID());
 
                 workOrderBundle.putParcelableArrayList("workOrders",items);
 
@@ -310,12 +315,21 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
     }
 
 
-    private void playMPSound(boolean isFast){
+    private void playMPSound(int level){
         if (!isPlaying && isTriggerPressed) {
-            if (isFast){
-                mp = MediaPlayer.create(this, R.raw.short_beep2);}
-            else{
-                mp = MediaPlayer.create(this, R.raw.single_simple_medium_beep);
+            if (level==1){
+                mp = MediaPlayer.create(this, R.raw.level1_beep3);}
+            if (level==2){
+                mp = MediaPlayer.create(this, R.raw.level2_beep);
+            }
+            if (level==3){
+                mp = MediaPlayer.create(this, R.raw.level3_beep2);
+            }
+            if (level==4){
+                mp = MediaPlayer.create(this, R.raw.level4_beep3);
+            }
+            if (level==5){
+                mp = MediaPlayer.create(this, R.raw.level5_beep2);
             }
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
@@ -354,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
     }
 
     private void addToRSSIWindow(List<Double> rssiWindow, Double newRSSI){
-        if (rssiWindow.size()==10){
+        if (rssiWindow.size()==5){
             System.out.println("removing old rssi:"+String.valueOf(rssiWindow.get(0)));
             rssiWindow.remove(0);
             rssiWindow.add(newRSSI);
@@ -376,10 +390,16 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
                 @Override
                 public void run() {
                     if (!finalIsReaderConnected) {
-                        ReaderConnectionText.setText("RFID Reader not connected");
+                        ReaderConnectionText.setText("Reader not connected");
                     }
                 }
             });
+       if (!isReaderConnected){
+           Log.d("Trying to reconnect","Please wait!");
+           rfidHandler.onPause();
+           rfidHandler.onResume();
+       }
+
         } catch (Exception e) {
             Log.e("RFIDStatusCheck", "Error checking RFID status", e);
             runOnUiThread(new Runnable() {
@@ -466,13 +486,20 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
 //                                Log.d("percentage:",String.valueOf(Percentage));
 
 //                                progressBarCustom.setProgress(Percentage);
-                                if (doubleDistance<0.5){
-                                    playMPSound(true);
-//                                    playBeepSound(soundPool,1.5f,100);
+                                if (doubleDistance<=0.25){
+                                    playMPSound(1);
                                 }
-                                else{
-                                    playMPSound(false);
-//                                    playBeepSound(soundPool,0.5f, 200);
+                                if ( doubleDistance>0.25 &&  doubleDistance<=0.5){
+                                    playMPSound(2);
+                                }
+                                if (doubleDistance>0.5 && doubleDistance<=0.75){
+                                    playMPSound(3);
+                                }
+                                if (doubleDistance>0.75 && doubleDistance<=1){
+                                    playMPSound(4);
+                                }
+                                if (doubleDistance>1 && doubleDistance<=1.5){
+                                    playMPSound(5);
                                 }
                         }}
                         else{
@@ -496,6 +523,43 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
                 });
 //            }
         }
+    }
+    public void onScanButtonClicked(View view){
+        if ("Scan".equals(scanButton.getText())){
+            Log.d("Scan button:","clicked");
+            buttonPressed=true;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    scanButton.setText("Stop");
+                    scanButton.invalidate();
+                }
+            });
+            }
+        if ("Stop".equals(scanButton.getText())){
+            buttonPressed=false;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    scanButton.setText("Scan");
+                    scanButton.invalidate();
+                }
+            });
+        }
+
+
+    }
+
+    public void handleButtonPress (Boolean isButtonPressed){
+        if (isButtonPressed){
+            Log.d("Scan button:","clicked");
+            rfidHandler.performInventory();
+        }
+        else{
+            rfidHandler.stopInventory();
+        }
+
+
     }
     @Override
     public void handleTriggerPress(boolean pressed) {
