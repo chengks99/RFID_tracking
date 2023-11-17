@@ -80,6 +80,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
             return true;
         else {
             Log.d(TAG, "reader is not connected");
+//            connectReader();
             return false;
         }
     }
@@ -165,7 +166,6 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
             connectReader();
         }
     }
-
     private synchronized void connectReader(){
         if(!isReaderConnected()){
             new ConnectionTask().execute();
@@ -240,6 +240,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
                 if (!reader.isConnected()) {
                     // Establish connection to the RFID Reader
                     reader.connect();
+                    reader.setTimeout(2000);
                     ConfigureReader();
                     if(reader.isConnected()){
                         return "Connected: " + reader.getHostName();
@@ -262,14 +263,22 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
         Log.d(TAG, "ConfigureReader " + reader.getHostName());
         if (reader.isConnected()) {
             TriggerInfo triggerInfo = new TriggerInfo();
+            //handheld trigger part
             triggerInfo.StartTrigger.setTriggerType(START_TRIGGER_TYPE.START_TRIGGER_TYPE_IMMEDIATE);
             triggerInfo.StopTrigger.setTriggerType(STOP_TRIGGER_TYPE.STOP_TRIGGER_TYPE_IMMEDIATE);
+            // scan button
+//            triggerInfo.StartTrigger.setTriggerType(START_TRIGGER_TYPE.START_TRIGGER_TYPE_IMMEDIATE);
+//            triggerInfo.StopTrigger.setTriggerType(STOP_TRIGGER_TYPE.STOP_TRIGGER_TYPE_TAG_OBSERVATION_WITH_TIMEOUT);
+//            triggerInfo.StopTrigger.TagObservation.setN((short)1000);
+//            //triggerInfo.StopTrigger.TagObservation.setN((short)200); // stop inventory after reading 200 tags
+//            triggerInfo.StopTrigger.TagObservation.setTimeout(5000); // timeout after 3 seconds
             try {
                 // receive events from reader
                 if (eventHandler == null)
                     eventHandler = new EventHandler();
                 reader.Events.addEventsListener(eventHandler);
                 // HH event
+                // handheld trigger part
                 reader.Events.setHandheldEvent(true);
                 // tag event with tag data
                 reader.Events.setTagReadEvent(true);
@@ -386,9 +395,9 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
         // Read Event Notification
         public void eventReadNotify(RfidReadEvents e) {
             // Recommended to use new method getReadTagsEx for better performance in case of large tag population
-            TagDataArray listTags = reader.Actions.getReadTagsEx(300);
-            TagData[] myTags = listTags.getTags();
-//            TagData[] myTags= reader.Actions.getReadTags(200);
+//            TagDataArray listTags = reader.Actions.getReadTagsEx(100);
+//            TagData[] myTags = listTags.getTags();
+            TagData[] myTags= reader.Actions.getReadTags(100);
             if (myTags != null) {
                 for (int index = 0; index < myTags.length; index++) {
                     Log.d(TAG, "Tag ID " + myTags[index].getTagID());
@@ -411,6 +420,37 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
                 new AsyncDataUpdate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, myTags);
             }
         }
+//        public void eventStatusNotify(RfidStatusEvents rfidStatusEvents) {
+//            Log.d(TAG, "Status Notification: " + rfidStatusEvents.StatusEventData.getStatusEventType());
+//                if (context.buttonPressed) {
+//                    new AsyncTask<Void, Void, Void>() {
+//                        @Override
+//                        protected Void doInBackground(Void... voids) {
+//                            if (context!=null){
+//                                context.handleButtonPress(true);}
+////                            if (locateTagcontext != null) {
+////                                locateTagcontext.handleTriggerPress(true);
+////                            }
+//                            return null;
+//                        }
+//                    }.execute();
+//                }
+//                if (!context.buttonPressed) {
+//                    new AsyncTask<Void, Void, Void>() {
+//                        @Override
+//                        protected Void doInBackground(Void... voids) {
+//                            if (context != null){
+//                                context.handleButtonPress(false);}
+////                            if (locateTagcontext != null) {
+////                                locateTagcontext.handleTriggerPress(false);
+////                            }
+//                            return null;
+//                        }
+//                    }.execute();
+//                }
+//            }
+
+
 
         // Status Event Notification
         public void eventStatusNotify(RfidStatusEvents rfidStatusEvents) {

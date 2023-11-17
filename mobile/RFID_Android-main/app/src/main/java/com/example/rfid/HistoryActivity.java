@@ -56,7 +56,9 @@ public class HistoryActivity extends AppCompatActivity {
                         objectOutputStream.writeObject(item);
 
                         String workOrderString = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
-                        String key = "workOrderKey" + (getSPSize(sp)+i);// Use a unique key for each work order
+//                        long timestamp = System.currentTimeMillis();
+//                        String key = "workOrderKey" + (getSPSize(sp)+i);// Use a unique key for each work order
+                        String key = "workOrderKey"+ item.getDate();
                         System.out.println("workOrderKey:" + key);
                         editor.putString(key, workOrderString);
                         editor.apply();
