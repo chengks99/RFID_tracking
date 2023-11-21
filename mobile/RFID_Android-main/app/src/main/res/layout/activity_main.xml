@@ -12,6 +12,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -39,6 +40,7 @@
                 android:paddingLeft="5dp"
                 android:text="Loading ..." />
         </LinearLayout>
+
         <TextView
             android:id="@+id/textView8"
             android:layout_width="match_parent"
@@ -73,8 +75,8 @@
                 android:layout_marginRight="8dp"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="number"
-                android:imeOptions="actionDone"/>
+                android:imeOptions="actionDone"
+                android:inputType="number" />
 
             <Button
                 android:id="@+id/submitButton"
@@ -109,7 +111,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:gravity="center_horizontal"
-            android:text="Distance to Tag ID (metres):"
+            android:text="RSSI of Tag ID:"
             android:textAllCaps="true"
             android:textColor="#009688"
             android:textSize="17sp"
@@ -122,23 +124,6 @@
             android:layout_marginTop="8dp"
             android:gravity="center_horizontal" />
 
-        <LinearLayout
-            android:id="@+id/rssiLayout"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:paddingTop="5dp">
-
-            <TextView
-                android:id="@+id/rssiValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center" />
-        </LinearLayout>
-
         <TextView
             android:id="@+id/tagStatusMsg"
             android:layout_width="match_parent"
@@ -147,52 +132,83 @@
             android:gravity="center|center_vertical"
             android:textSize="14sp" />
 
-        <TextView
-            android:id="@+id/rssiToDistance"
+        <LinearLayout
+            android:id="@+id/rssiLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center_horizontal|center_vertical"
-            android:textSize="23sp" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:paddingTop="5dp">
 
-        <ImageView
-            android:id="@+id/CircleView"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="10dp" />
+            <TextView
+                android:id="@+id/rssiValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="40sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
-<!--        <Button-->
-<!--            android:id="@+id/scanButton"-->
-<!--            android:layout_width="100dp"-->
-<!--            android:layout_height="50dp"-->
-<!--            android:onClick="onScanButtonClicked"-->
-<!--            android:text="Scan" />-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/rssiToDistance"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginTop="12dp"-->
+        <!--            android:gravity="center_horizontal|center_vertical"-->
+        <!--            android:textSize="23sp" />-->
+
+        <!--        <ImageView-->
+        <!--            android:id="@+id/CircleView"-->
+        <!--            android:layout_width="120dp"-->
+        <!--            android:layout_height="120dp"-->
+        <!--            android:layout_marginTop="10dp" />-->
+
+        <!--        <Button-->
+        <!--            android:id="@+id/scanButton"-->
+        <!--            android:layout_width="100dp"-->
+        <!--            android:layout_height="50dp"-->
+        <!--            android:onClick="onScanButtonClicked"-->
+        <!--            android:text="Scan" />-->
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal">
+            android:id="@+id/imageViewLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal"></LinearLayout>
 
-            <Button
-                android:id="@+id/fiftySaveBtn"
-                android:layout_width="160dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="10dp"
-                android:onClick="OnSave50cmButtonPressed"
-                android:text="Save RSSI for 50cm" />
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_gravity="bottom"-->
+<!--            android:layout_marginBottom="5dp"-->
+<!--            android:foregroundGravity="bottom"-->
+<!--            android:gravity="bottom"-->
+<!--            android:orientation="horizontal">-->
 
-            <Button
-                android:id="@+id/meterSaveBtn"
-                android:layout_width="170dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:layout_weight="1"
-                android:onClick="OnSave1mButtonPressed"
-                android:text="Save RSSI For 1m"
-                app:toggleCheckedStateOnClick="false" />
-        </LinearLayout>
+<!--            <Button-->
+<!--                android:id="@+id/fiftySaveBtn"-->
+<!--                android:layout_width="160dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                android:layout_marginEnd="10dp"-->
+<!--                android:onClick="OnSave50cmButtonPressed"-->
+<!--                android:text="Save RSSI for 50cm" />-->
+
+<!--            <Button-->
+<!--                android:id="@+id/meterSaveBtn"-->
+<!--                android:layout_width="170dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginEnd="20dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:onClick="OnSave1mButtonPressed"-->
+<!--                android:text="Save RSSI For 1m"-->
+<!--                app:toggleCheckedStateOnClick="false" />-->
+<!--        </LinearLayout>-->
 
     </LinearLayout>
 

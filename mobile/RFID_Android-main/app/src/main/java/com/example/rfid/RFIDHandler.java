@@ -240,7 +240,6 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
                 if (!reader.isConnected()) {
                     // Establish connection to the RFID Reader
                     reader.connect();
-                    reader.setTimeout(2000);
                     ConfigureReader();
                     if(reader.isConnected()){
                         return "Connected: " + reader.getHostName();
@@ -260,7 +259,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
 
 
     private void ConfigureReader() {
-        Log.d(TAG, "ConfigureReader " + reader.getHostName());
+//        Log.d(TAG, "ConfigureReader " + reader.getHostName());
         if (reader.isConnected()) {
             TriggerInfo triggerInfo = new TriggerInfo();
             //handheld trigger part

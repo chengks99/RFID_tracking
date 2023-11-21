@@ -1,13 +1,9 @@
 package com.example.rfid;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Build;
@@ -15,24 +11,20 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
     public TextView ReaderConnectionText;
     private TextView tagID;
     private TextView rssiValue;
-    private TextView rssiToDistance;
+//    private TextView rssiToDistance;
     private String receivedValue;
     static Double receivedParams;
     static Double receivedRSSI1meter;
@@ -68,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
     private RFIDHandler rfidHandler;
     private EditText editTextWorkOrderID;
     private ImageView circleView;
+    private ImageView imageView;
+    private ViewGroup rootLayout;
     private Button submitButton;
     private Button fiftySaveButton;
     private Button meterSaveButton;
@@ -100,22 +94,30 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        rootLayout = findViewById(R.id.imageViewLayout);
         inputManager =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
 //        progressBarCustom = (ProgressBar) findViewById(R.id.progressBar);
 //        progressBarCustom.setProgress(0);
 
         ReaderConnectionText = findViewById(R.id.ReaderConnectionText);
+        imageView = new ImageView(this);
+        // Set the ImageView properties
+        imageView.setId(View.generateViewId());
+        imageView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
 //        scanButton= findViewById(R.id.scanButton);
-        rssiToDistance = findViewById(R.id.rssiToDistance);
+//        rssiToDistance = findViewById(R.id.rssiToDistance);
         tagStatusMsg = findViewById(R.id.tagStatusMsg);
         tagID = findViewById(R.id.tagID);
         rssiValue = findViewById(R.id.rssiValue);
         editTextWorkOrderID = findViewById(R.id.editTextWorkOrderID);
         submitButton = findViewById(R.id.submitButton);
-        fiftySaveButton = findViewById(R.id.fiftySaveBtn);
-        meterSaveButton = findViewById(R.id.meterSaveBtn);
-        circleView = findViewById(R.id.CircleView);
+//        fiftySaveButton = findViewById(R.id.fiftySaveBtn);
+//        meterSaveButton = findViewById(R.id.meterSaveBtn);
+//        circleView = findViewById(R.id.CircleView);
         Bundle bundle = getIntent().getExtras();
         if (bundle!=null){
             receivedParams = bundle.getDouble("n");
@@ -216,6 +218,16 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
         super.onPause();
         rfidHandler.onPause();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        rfidHandler.onResume();
+        String status = rfidHandler.onResume();
+        ReaderConnectionText.setText(status);
+        startRFIDStatusCheckTimer();
+    }
+
     @Override
     protected void onPostResume() {
         super.onPostResume();
@@ -320,16 +332,16 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
             if (level==1){
                 mp = MediaPlayer.create(this, R.raw.level1_beep3);}
             if (level==2){
-                mp = MediaPlayer.create(this, R.raw.level2_beep);
+                mp = MediaPlayer.create(this, R.raw.final_level2_beep);
             }
             if (level==3){
-                mp = MediaPlayer.create(this, R.raw.level3_beep2);
+                mp = MediaPlayer.create(this, R.raw.final_level3_beep);
             }
             if (level==4){
-                mp = MediaPlayer.create(this, R.raw.level4_beep3);
+                mp = MediaPlayer.create(this, R.raw.final_level4_beep);
             }
             if (level==5){
-                mp = MediaPlayer.create(this, R.raw.level5_beep2);
+                mp = MediaPlayer.create(this, R.raw.final_level5_beep);
             }
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
@@ -356,7 +368,28 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
             isPlaying = false;
         }
     }
+    private void createCircleView(){
+        imageView.getLayoutParams().width = dpToPx(150); // Convert dp to pixels
+        imageView.getLayoutParams().height = dpToPx(150);
+        imageView.setImageResource(R.drawable.delete); // Set your image resource
 
+        // Add the ImageView to your layout
+        if (imageView.getParent() != null) {
+            ((ViewGroup) imageView.getParent()).removeView(imageView);
+        }
+        rootLayout.addView(imageView);
+    }
+
+    private void removeCircleView(){
+        if (imageView.getParent() != null) {
+            ((ViewGroup) imageView.getParent()).removeView(imageView);
+        }
+//        imageView.setImageResource(android.R.color.transparent);
+    }
+    private int dpToPx(int dp) {
+        float scale = getResources().getDisplayMetrics().density;
+        return (int) (dp * scale + 0.5f);
+    }
     private double calculateAvgRSSIWindow(List<Double> rssiWindow){
         double sum=0;
         int count=0;
@@ -384,7 +417,7 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
         try {
             // Attempt to get the RFID connection status
             isReaderConnected = rfidHandler.isReaderConnected();
-
+            Log.d("checkRFIDStatus isReaderConnected:", String.valueOf(isReaderConnected));
             boolean finalIsReaderConnected = isReaderConnected;
             runOnUiThread(new Runnable() {
                 @Override
@@ -396,8 +429,11 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
             });
        if (!isReaderConnected){
            Log.d("Trying to reconnect","Please wait!");
-           rfidHandler.onPause();
-           rfidHandler.onResume();
+//           rfidHandler.onPause();
+//           rfidHandler.onDestroy();
+//           rfidHandler.onCreate(this);
+           Log.e(" /Destroy and Create","Please wait!");
+//           rfidHandler.onResume();
        }
 
         } catch (Exception e) {
@@ -462,54 +498,72 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
                             Double rssi =TagRecyclerAdapter.calculateAvgRSSI(tagsCopy,finalSearch_tagID);
                             System.out.println("RSSI adding to window: "+String.valueOf(rssi));
                             addToRSSIWindow(rssiWindow,rssi);
-                            circleView.setImageResource(R.drawable.check);
+                            removeCircleView();
+//                            circleView.setImageResource(R.drawable.check);
                             tagStatusMsg.setText("Tag Found");
-                            Double avgRSSI = calculateAvgRSSIWindow(rssiWindow);
-                            Double doubleDistance;
+                            Double avgRSSI = calculateAvgRSSIWindow(rssiWindow) * -1;
+//                            Double doubleDistance;
                             if (receivedParams!=null){
-                                doubleDistance = TagRecyclerAdapter.distanceAlgorithm3(tagsCopy,avgRSSI, finalSearch_tagID,receivedParams,receivedRSSI1meter);
-                                System.out.println("received Params is " + String.valueOf(receivedParams));
+//                                doubleDistance = TagRecyclerAdapter.distanceAlgorithm3(tagsCopy,avgRSSI, finalSearch_tagID,receivedParams,receivedRSSI1meter);
+//                                System.out.println("received Params is " + String.valueOf(receivedParams));
                             }
                             else{
-                                doubleDistance= TagRecyclerAdapter.distanceAlgorithm3(tagsCopy,avgRSSI, finalSearch_tagID);}
+//                                doubleDistance= TagRecyclerAdapter.distanceAlgorithm3(tagsCopy,avgRSSI, finalSearch_tagID);}
 //                            Double doubleDistance = TagRecyclerAdapter.avgDistanceWindow(finalSearch_tagID);
-                            String formattedNumberDistance = decimalFormat.format(doubleDistance);
+//                            String formattedNumberDistance = decimalFormat.format(doubleDistance);
                             tagID.setText(finalSearch_tagID);
                             if (!Double.isNaN(avgRSSI)){
-                                rssiValue.setText("RSSI:"+decimalFormat.format(avgRSSI));}
-                            if (Double.isNaN(doubleDistance)){
-                                rssiToDistance.setText("N/A");
-                            }
-                            if (!formattedNumberDistance.equals("-99.99")){
-                                rssiToDistance.setText(formattedNumberDistance);
-//                                Integer Percentage = (int) Math.round(((1-doubleDistance/3.0)*100));
-//                                Log.d("percentage:",String.valueOf(Percentage));
-
-//                                progressBarCustom.setProgress(Percentage);
-                                if (doubleDistance<=0.25){
-                                    playMPSound(1);
-                                }
-                                if ( doubleDistance>0.25 &&  doubleDistance<=0.5){
+                                rssiValue.setText(decimalFormat.format(avgRSSI));
+                                if (avgRSSI<25){
+                                playMPSound(1);}
+                                if (avgRSSI<30 &&  avgRSSI>=25){
                                     playMPSound(2);
                                 }
-                                if (doubleDistance>0.5 && doubleDistance<=0.75){
+                                if (avgRSSI<35 && avgRSSI>=30){
                                     playMPSound(3);
                                 }
-                                if (doubleDistance>0.75 && doubleDistance<=1){
+                                if (avgRSSI<45 && avgRSSI>=35){
                                     playMPSound(4);
                                 }
-                                if (doubleDistance>1 && doubleDistance<=1.5){
+                                if (avgRSSI<55){
                                     playMPSound(5);
                                 }
-                        }}
+                            }
+//                            if (Double.isNaN(doubleDistance)){
+//                                rssiToDistance.setText("N/A");
+//                            }
+//                            if (!formattedNumberDistance.equals("-99.99")){
+//                                rssiToDistance.setText(formattedNumberDistance);
+////                                Integer Percentage = (int) Math.round(((1-doubleDistance/3.0)*100));
+////                                Log.d("percentage:",String.valueOf(Percentage));
+//
+////                                progressBarCustom.setProgress(Percentage);
+//                                if (doubleDistance<=0.25){
+//                                    playMPSound(1);
+//                                }
+//                                if ( doubleDistance>0.25 &&  doubleDistance<=0.5){
+//                                    playMPSound(2);
+//                                }
+//                                if (doubleDistance>0.5 && doubleDistance<=0.75){
+//                                    playMPSound(3);
+//                                }
+//                                if (doubleDistance>0.75 && doubleDistance<=1){
+//                                    playMPSound(4);
+//                                }
+////                                if (doubleDistance>1 && doubleDistance<=1.5){
+////                                    playMPSound(5);
+////                                }
+//                        }
+                            }}
                         else{
                             Log.d("notFoundCount:",String.valueOf(notFoundCount[0]));
 
                             if (notFoundCount[0]>=50){
                                 Log.e("Not found","Tag not found 50 times");
-                            rssiToDistance.setText("");
+//                            rssiToDistance.setText("");
                             rssiValue.setText("");
-                            circleView.setImageResource(R.drawable.delete);
+                            createCircleView();
+//                            circleView.setImageResource(R.drawable.delete);
                             tagStatusMsg.setText("Tag not detected! Please adjust direction or move");
 //                            progressBarCustom.setProgress(0);
                             notFoundCount[0]=0;
@@ -523,43 +577,6 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
                 });
 //            }
         }
-    }
-    public void onScanButtonClicked(View view){
-        if ("Scan".equals(scanButton.getText())){
-            Log.d("Scan button:","clicked");
-            buttonPressed=true;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    scanButton.setText("Stop");
-                    scanButton.invalidate();
-                }
-            });
-            }
-        if ("Stop".equals(scanButton.getText())){
-            buttonPressed=false;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    scanButton.setText("Scan");
-                    scanButton.invalidate();
-                }
-            });
-        }
-
-
-    }
-
-    public void handleButtonPress (Boolean isButtonPressed){
-        if (isButtonPressed){
-            Log.d("Scan button:","clicked");
-            rfidHandler.performInventory();
-        }
-        else{
-            rfidHandler.stopInventory();
-        }
-
-
     }
     @Override
     public void handleTriggerPress(boolean pressed) {
