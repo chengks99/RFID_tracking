@@ -118,33 +118,36 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
 //        fiftySaveButton = findViewById(R.id.fiftySaveBtn);
 //        meterSaveButton = findViewById(R.id.meterSaveBtn);
 //        circleView = findViewById(R.id.CircleView);
-        Bundle bundle = getIntent().getExtras();
-        if (bundle!=null){
-            receivedParams = bundle.getDouble("n");
-            receivedRSSI1meter = bundle.getDouble("rssi1Meter");
-            System.out.println("received Params: "+ String.valueOf(receivedParams));
-            System.out.println("received rssi at 1 meter: "+ String.valueOf(receivedRSSI1meter));
-            Toast.makeText(this, "n set to: "+String.valueOf(receivedParams), Toast.LENGTH_LONG).show();
-        }
+//        Bundle bundle = getIntent().getExtras();
+//        if (bundle!=null){
+//            receivedParams = bundle.getDouble("n");
+//            receivedRSSI1meter = bundle.getDouble("rssi1Meter");
+//            System.out.println("received Params: "+ String.valueOf(receivedParams));
+//            System.out.println("received rssi at 1 meter: "+ String.valueOf(receivedRSSI1meter));
+//            Toast.makeText(this, "n set to: "+String.valueOf(receivedParams), Toast.LENGTH_LONG).show();
+//        }
 
 
         rfidHandler = new RFIDHandler();
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-            if (ContextCompat.checkSelfPermission(this,
-                    android.Manifest.permission.BLUETOOTH_CONNECT)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT},
-                        BLUETOOTH_PERMISSION_REQUEST_CODE);
-            }else{
-                rfidHandler.onCreate(this);
-            }
-
-        }else{
-            rfidHandler.onCreate(this);
-        }
+        rfidHandler.onCreate(this);
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+//            if (ContextCompat.checkSelfPermission(this,
+//                    android.Manifest.permission.BLUETOOTH_CONNECT)
+//                    != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(this,
+//                        new String[]{android.Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT},
+//                        BLUETOOTH_PERMISSION_REQUEST_CODE);
+//            }else{
+//                rfidHandler.onCreate(this);
+//            }
+//
+//        }else{
+//            rfidHandler.onCreate(this);
+//        }
         startRFIDStatusCheckTimer();
     }
+
+
 
     private void startRFIDStatusCheckTimer() {
         Handler handler = new Handler(Looper.getMainLooper());
@@ -201,10 +204,18 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
 //        receivedValue = workID;
         tagID.setText(receivedValue);
         isEntered= true;
+        sb.clear();
 
     } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.e("Calling on start method:","success");
+//        rfidHandler.onCreate(this);
     }
 
     @Override
@@ -226,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
         String status = rfidHandler.onResume();
         ReaderConnectionText.setText(status);
         startRFIDStatusCheckTimer();
+        Log.e("Calling on resume:","success");
     }
 
     @Override
@@ -266,14 +278,14 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
                 startActivity(intent);
                 finish();
                 return true;
-            case R.id.settings:
-                intent = new Intent(this,SettingsActivity.class);
-                if (!senderBundle.isEmpty()){
-                    intent.putExtras(senderBundle);
-                }
-                startActivity(intent);
-                finish();
-                return true;
+//            case R.id.settings:
+//                intent = new Intent(this,SettingsActivity.class);
+//                if (!senderBundle.isEmpty()){
+//                    intent.putExtras(senderBundle);
+//                }
+//                startActivity(intent);
+//                finish();
+//                return true;
             case R.id.home:
                 intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
@@ -417,23 +429,24 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
         try {
             // Attempt to get the RFID connection status
             isReaderConnected = rfidHandler.isReaderConnected();
-            Log.d("checkRFIDStatus isReaderConnected:", String.valueOf(isReaderConnected));
+
             boolean finalIsReaderConnected = isReaderConnected;
+            Log.d("checkRFIDStatus finalisReaderConnected:", String.valueOf(finalIsReaderConnected));
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if (!finalIsReaderConnected) {
                         ReaderConnectionText.setText("Reader not connected");
                     }
+                    else{
+                        ReaderConnectionText.setText(rfidHandler.GetHostName());
+                    }
                 }
             });
        if (!isReaderConnected){
            Log.d("Trying to reconnect","Please wait!");
-//           rfidHandler.onPause();
-//           rfidHandler.onDestroy();
-//           rfidHandler.onCreate(this);
-           Log.e(" /Destroy and Create","Please wait!");
-//           rfidHandler.onResume();
+//           checkAndRestartActivity();
+           rfidHandler.Reconnect();
        }
 
         } catch (Exception e) {
@@ -514,15 +527,15 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
                             tagID.setText(finalSearch_tagID);
                             if (!Double.isNaN(avgRSSI)){
                                 rssiValue.setText(decimalFormat.format(avgRSSI));
-                                if (avgRSSI<25){
+                                if (avgRSSI<27){
                                 playMPSound(1);}
-                                if (avgRSSI<30 &&  avgRSSI>=25){
+                                if (avgRSSI<34 &&  avgRSSI>=27){
                                     playMPSound(2);
                                 }
-                                if (avgRSSI<35 && avgRSSI>=30){
+                                if (avgRSSI<41 && avgRSSI>=34){
                                     playMPSound(3);
                                 }
-                                if (avgRSSI<45 && avgRSSI>=35){
+                                if (avgRSSI<48 && avgRSSI>=41){
                                     playMPSound(4);
                                 }
                                 if (avgRSSI<55){

@@ -7,10 +7,10 @@
         app:showAsAction="ifRoom">
     </item>
 
-    <item android:id="@+id/settings"
-        android:icon="@drawable/ic_settings"
-        android:title="Settings"
-        app:showAsAction="ifRoom"></item>
+<!--    <item android:id="@+id/settings"-->
+<!--        android:icon="@drawable/ic_settings"-->
+<!--        android:title="Settings"-->
+<!--        app:showAsAction="ifRoom"></item>-->
 
     <item android:id="@+id/home"
         android:icon = "@drawable/ic_home"

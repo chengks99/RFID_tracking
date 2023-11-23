@@ -74,6 +74,11 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
 //        InitSDK();
 //    }
 
+    public void Reconnect() throws OperationFailureException, InvalidUsageException {
+        if (reader!= null && !reader.isConnected()){
+            reader.reconnect();
+        }
+    }
 
     public boolean isReaderConnected() {
         if (reader != null && reader.isConnected())
@@ -232,6 +237,14 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
             disconnect();
     }
 
+    public String GetHostName(){
+        if (reader!=null){
+            return "Connected: " + reader.getHostName();
+        }
+        else{
+            return "Error finding reader";
+        }
+    }
 
     private synchronized String connect() {
         if (reader != null) {
@@ -419,35 +432,6 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
                 new AsyncDataUpdate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, myTags);
             }
         }
-//        public void eventStatusNotify(RfidStatusEvents rfidStatusEvents) {
-//            Log.d(TAG, "Status Notification: " + rfidStatusEvents.StatusEventData.getStatusEventType());
-//                if (context.buttonPressed) {
-//                    new AsyncTask<Void, Void, Void>() {
-//                        @Override
-//                        protected Void doInBackground(Void... voids) {
-//                            if (context!=null){
-//                                context.handleButtonPress(true);}
-////                            if (locateTagcontext != null) {
-////                                locateTagcontext.handleTriggerPress(true);
-////                            }
-//                            return null;
-//                        }
-//                    }.execute();
-//                }
-//                if (!context.buttonPressed) {
-//                    new AsyncTask<Void, Void, Void>() {
-//                        @Override
-//                        protected Void doInBackground(Void... voids) {
-//                            if (context != null){
-//                                context.handleButtonPress(false);}
-////                            if (locateTagcontext != null) {
-////                                locateTagcontext.handleTriggerPress(false);
-////                            }
-//                            return null;
-//                        }
-//                    }.execute();
-//                }
-//            }
 
 
 

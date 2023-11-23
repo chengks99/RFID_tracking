@@ -77,11 +77,11 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
                 return true;
-            case R.id.settings:
-                intent = new Intent(this,SettingsActivity.class);
-                startActivity(intent);
-                finish();
-                return true;
+//            case R.id.settings:
+//                intent = new Intent(this,SettingsActivity.class);
+//                startActivity(intent);
+//                finish();
+//                return true;
             case R.id.home:
                 intent = new Intent(this, MainActivity.class);
                 startActivity(intent);

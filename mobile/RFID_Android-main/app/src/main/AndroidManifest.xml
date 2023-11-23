@@ -18,11 +18,11 @@
             android:exported="false"
             android:windowSoftInputMode="adjustPan"
             />
-        <activity
-            android:name=".SettingsActivity"
-            android:exported="false"
-            android:label="Settings"
-            android:windowSoftInputMode="adjustPan" />
+<!--        <activity-->
+<!--            android:name=".SettingsActivity"-->
+<!--            android:exported="false"-->
+<!--            android:label="Settings"-->
+<!--            android:windowSoftInputMode="adjustPan" />-->
         <activity
             android:name=".MainActivity"
             android:exported="true"
