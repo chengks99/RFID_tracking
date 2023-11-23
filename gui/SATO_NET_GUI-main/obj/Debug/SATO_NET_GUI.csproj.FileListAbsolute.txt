@@ -10,3 +10,7 @@ C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_
 C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\obj\Debug\SATO_NET_GUI.exe
 C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\obj\Debug\SATO_NET_GUI.pdb
 C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\bin\Debug\SATO_NET_GUI.pdb
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\bin\Debug\SATO_NET_GUI.exe.manifest
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\bin\Debug\SATO_NET_GUI.application
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\obj\Debug\SATO_NET_GUI.exe.manifest
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\obj\Debug\SATO_NET_GUI.application

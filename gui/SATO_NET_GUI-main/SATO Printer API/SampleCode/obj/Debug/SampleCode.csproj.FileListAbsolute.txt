@@ -1,0 +1,3 @@
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO Printer API\SampleCode\obj\Debug\SampleCode.csproj.AssemblyReference.cache
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO Printer API\SampleCode\obj\Debug\SampleCode.SampleForm.resources
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO Printer API\SampleCode\obj\Debug\SampleCode.csproj.GenerateResource.cache

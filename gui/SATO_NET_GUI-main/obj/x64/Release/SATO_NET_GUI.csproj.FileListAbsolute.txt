@@ -1,0 +1,16 @@
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\bin\x64\Release\SATO_NET_GUI.exe
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\bin\x64\Release\SATOPrinterAPI.dll
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\bin\x64\Release\SATO_NET_GUI.exe.config
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\bin\x64\Release\SATO_NET_GUI.exe.manifest
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\bin\x64\Release\SATO_NET_GUI.application
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\obj\x64\Release\SATO_NET_GUI.csproj.AssemblyReference.cache
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\obj\x64\Release\SATO_NET_GUI.Form1.resources
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\obj\x64\Release\SATO_NET_GUI.Properties.Resources.resources
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\obj\x64\Release\SATO_NET_GUI.csproj.GenerateResource.cache
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\obj\x64\Release\SATO_NET_GUI.csproj.CoreCompileInputs.cache
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\obj\x64\Release\SATO_NET_GUI.exe.manifest
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\obj\x64\Release\SATO_NET_GUI.application
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\obj\x64\Release\SATO_NET_GUI.csproj.CopyComplete
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\obj\x64\Release\SATO_NET_GUI.exe
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\obj\x64\Release\SATO_NET_GUI.pdb
+C:\Users\Default\Desktop\satoRFIDPrinter-main\satoRFIDPrinter\SATO_NET_GUI\SATO_NET_GUI\bin\x64\Release\SATO_NET_GUI.pdb

@@ -16,7 +16,7 @@ namespace SATO_NET_GUI
         [STAThread]
         static void Main()
         {
-            Printer SATOPrinter = new Printer();
+            //Printer SATOPrinter = new Printer();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
