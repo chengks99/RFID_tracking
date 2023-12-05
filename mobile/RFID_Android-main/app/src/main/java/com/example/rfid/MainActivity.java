@@ -446,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements RFIDHandler.Respo
        if (!isReaderConnected){
            Log.d("Trying to reconnect","Please wait!");
 //           checkAndRestartActivity();
-           rfidHandler.Reconnect();
+//           rfidHandler.Restart();
        }
 
         } catch (Exception e) {

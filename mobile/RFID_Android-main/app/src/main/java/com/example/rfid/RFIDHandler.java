@@ -3,6 +3,7 @@ package com.example.rfid;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.telephony.mbms.MbmsErrors;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ import com.zebra.rfid.api3.INVENTORY_STATE;
 import com.zebra.rfid.api3.InvalidUsageException;
 import com.zebra.rfid.api3.OperationFailureException;
 import com.zebra.rfid.api3.RFIDReader;
+import com.zebra.rfid.api3.ReaderManagement;
 import com.zebra.rfid.api3.ReaderDevice;
 import com.zebra.rfid.api3.Readers;
 import com.zebra.rfid.api3.RfidEventsListener;
@@ -55,6 +57,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
     // general
     private int MAX_POWER = 300;
     private int MAX_SENSITIVTY;
+    private ReaderManagement readerManager;
 
     // In case of RFD8500 change reader name with intended device below from list of paired RFD8500
     String readerName = "RFD4031-G10B700-JP";
@@ -64,8 +67,9 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
         context = activity;
         // Status UI
         textView = activity.ReaderConnectionText;
-        // SDK
+        readerManager = new ReaderManagement();
         InitSDK();
+
     }
 
 //    void onCreate(LocateTagActivity activity){
@@ -74,11 +78,6 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
 //        InitSDK();
 //    }
 
-    public void Reconnect() throws OperationFailureException, InvalidUsageException {
-        if (reader!= null && !reader.isConnected()){
-            reader.reconnect();
-        }
-    }
 
     public boolean isReaderConnected() {
         if (reader != null && reader.isConnected())
@@ -124,6 +123,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
         @Override
         protected Void doInBackground(Void... voids) {
             Log.d(TAG, "CreateInstanceTask");
+            InvalidUsageException invalidUsageException = null;
             try {
                 // Based on support available on the host device, choose the reader type
                 if (context != null) {
@@ -134,11 +134,17 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
                 } catch (InvalidUsageException e) {
                     e.printStackTrace();
                 }
-            } catch (Exception e) {
-                // Log the exception for debugging purposes
-                e.printStackTrace();
+                if (invalidUsageException != null) {
+                    readers.Dispose();
+                    readers = null;
+                    if (readers == null) {
+                        readers = new Readers(context, ENUM_TRANSPORT.BLUETOOTH);
+                    }
+                }
+                return null;
+            } finally {
+
             }
-            return null;
         }
 //        protected Void doInBackground(Void... voids) {
 //            Log.d(TAG, "CreateInstanceTask");
@@ -182,8 +188,16 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
         protected String doInBackground(Void... voids) {
             Log.d(TAG, "ConnectionTask");
             GetAvailableReader();
-            if (reader != null)
+            if (reader != null){
+//                try {
+//                    readerManager.getReaderInfo();
+//                } catch (InvalidUsageException e) {
+//                    throw new RuntimeException(e);
+//                } catch (OperationFailureException e) {
+//                    throw new RuntimeException(e);
+//                }
                 return connect();
+            }
             return "Failed to find or connect reader";
         }
 
@@ -254,9 +268,10 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
                     // Establish connection to the RFID Reader
                     reader.connect();
                     ConfigureReader();
+                    if (reader !=null){
                     if(reader.isConnected()){
                         return "Connected: " + reader.getHostName();
-                    }
+                    }}
                 }
             } catch (InvalidUsageException e) {
                 e.printStackTrace();
@@ -264,6 +279,14 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
                 e.printStackTrace();
                 Log.d(TAG, "OperationFailureException " + e.getVendorMessage());
                 String des = e.getResults().toString();
+                if (e instanceof OperationFailureException) {
+                    OperationFailureException operationFailureException = (OperationFailureException) e;
+                    if (operationFailureException.getStatusDescription().equals("Response timeout")) {
+                        // API command timeout occurred, dispose of the reader and reconnect
+                        dispose();
+                        connectReader();
+                    }
+                }
                 return "Connection failed" + e.getVendorMessage() + " " + des;
             }
         }
@@ -278,12 +301,6 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
             //handheld trigger part
             triggerInfo.StartTrigger.setTriggerType(START_TRIGGER_TYPE.START_TRIGGER_TYPE_IMMEDIATE);
             triggerInfo.StopTrigger.setTriggerType(STOP_TRIGGER_TYPE.STOP_TRIGGER_TYPE_IMMEDIATE);
-            // scan button
-//            triggerInfo.StartTrigger.setTriggerType(START_TRIGGER_TYPE.START_TRIGGER_TYPE_IMMEDIATE);
-//            triggerInfo.StopTrigger.setTriggerType(STOP_TRIGGER_TYPE.STOP_TRIGGER_TYPE_TAG_OBSERVATION_WITH_TIMEOUT);
-//            triggerInfo.StopTrigger.TagObservation.setN((short)1000);
-//            //triggerInfo.StopTrigger.TagObservation.setN((short)200); // stop inventory after reading 200 tags
-//            triggerInfo.StopTrigger.TagObservation.setTimeout(5000); // timeout after 3 seconds
             try {
                 // receive events from reader
                 if (eventHandler == null)
@@ -300,6 +317,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
                 // set start and stop triggers
                 reader.Config.setStartTrigger(triggerInfo.StartTrigger);
                 reader.Config.setStopTrigger(triggerInfo.StopTrigger);
+                Log.e("reader time out",String.valueOf(reader.getTimeout()));
                 //set beeper volume
                 reader.Config.setBeeperVolume(BEEPER_VOLUME.QUIET_BEEP);
 
@@ -310,9 +328,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
                 Antennas.AntennaRfConfig config = reader.Config.Antennas.getAntennaRfConfig(1);
                 config.setTransmitPowerIndex(MAX_POWER);
                 config.setrfModeTableIndex(0);
-                config.setTari(25000);
-                config.setReceiveSensitivityIndex(MAX_SENSITIVTY);
-                config.setTransmitFrequencyIndex(300);
+                config.setTari(0);
                 reader.Config.Antennas.setAntennaRfConfig(1, config);
                 // Set the singulation control
                 Antennas.SingulationControl s1_singulationControl = reader.Config.Antennas.getSingulationControl(1);
@@ -329,6 +345,16 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
 
             } catch (InvalidUsageException | OperationFailureException e) {
                 e.printStackTrace();
+                if (e instanceof OperationFailureException) {
+                    OperationFailureException operationFailureException = (OperationFailureException) e;
+                    Log.e("operationFailureException.getStatusDescription()", operationFailureException.getStatusDescription());
+                    if (operationFailureException.getStatusDescription().equals("RFID_API_COMMAND_TIMEOUT")) {
+                        // API command timeout occurred, dispose of the reader and reconnect
+                        Log.e("Dispose and connect after api timeout","success");
+                        dispose();
+                        connectReader();
+                    }
+                }
             }
         }
     }
@@ -385,6 +411,14 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
             e.printStackTrace();
         } catch (OperationFailureException e) {
             e.printStackTrace();
+            OperationFailureException operationFailureException = (OperationFailureException) e;
+            Log.e("operationFailureException.getStatusDescription()", operationFailureException.getStatusDescription());
+            if (operationFailureException.getStatusDescription().equals("RFID_API_COMMAND_TIMEOUT")) {
+                // API command timeout occurred, dispose of the reader and reconnect
+                Log.e("Dispose and connect after api timeout","success");
+                dispose();
+                connectReader();
+            }
         }
     }
 
@@ -398,6 +432,14 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
             e.printStackTrace();
         } catch (OperationFailureException e) {
             e.printStackTrace();
+            OperationFailureException operationFailureException = (OperationFailureException) e;
+            Log.e("operationFailureException.getStatusDescription()", operationFailureException.getStatusDescription());
+            if (operationFailureException.getStatusDescription().equals("RFID_API_COMMAND_TIMEOUT")) {
+                // API command timeout occurred, dispose of the reader and reconnect
+                Log.e("Dispose and connect after api timeout","success");
+                dispose();
+                connectReader();
+            }
         }
     }
 
